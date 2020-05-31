@@ -105,3 +105,31 @@ The output of the program 'test_binheap' is:
 So all the execution times grows with the dimension. The ordered array has the best performance for each value of n. The reverse ordered array has the worst performance for each value of n. The random array has a performance between the two.
 
 This is all correct with the theory. Notice how as n doubles then the time to build the matrix doubles. Of course ext_min has a time $\Theta(1)$ so it is so small that it is not measured by the program. ext_min's performance does not depend on n.
+
+----------------------------------------------------------------------
+
+Now I want to prove that with the array representation, then the leaves of a binary heap that contains $n>0$ nodes are indexed by $\lfloor n/2 \rfloor+1,\lfloor n/2 \rfloor+2,\cdots,n$
+
+We count the indexes starting from 1;
+
+- Let's take the rightmost leaf of the last level: it has index $n$
+- It's parent is then an internal node that has index $\lfloor n/2 \rfloor$
+- Then the node of index $\lfloor n/2 \rfloor +1$ must be a leaf, because we have already picked the rightmost leaf of the last level and so there are no more.
+- Since the heap is a nearly complete binary tree, by its topology then all the consecutive indexes from $\lfloor n/2 \rfloor +1$ to $n$ must be leaves and so we have our proof.
+
+----------------------------------------------------------
+
+Now I want to see that HEAPIFY applied on a binary heap H of size n has a worst case running time $\Omega(log n)$.
+
+We just need to think about this case:
+
+-We have swapped the root with the last element of the array, which is the rightmost leaf of the latest level of the heap. We have decreased the node count by 1. Now we need to apply HEAPIFY.
+
+The worst-case scenario from the node i is when $H[left(i)]\preceq H[i]$ or $H[right(i)]\preceq H[i]$ because then the if-clause in the for-cycle of the algorithm is true at least once, a swap is made, and HEAPIFY is called recursively on one of the children. But the most important thing for the worst-case scenario is that one of the above must be recursively true for that children(so depending on the case $H[left(right(i))]\preceq H[right(i)]$ or $H[right(right(i))]\preceq H[right(i)]$ or either  $H[left(left(i))]\preceq H[left(i)]$ or $H[right(left(i))]\preceq H[left(i)]$), until we reach a leaf. 
+
+- This can happen for example when after the swap to extract the minimum we have an array A of size n and keys ${a_1,a_2,\cdots,a_n}$where $a_i \preceq a_1 \forall i = 2,\cdots,n$
+
+Heapify is then called a number of times equal to the number of nodes that connects the root to one leaf of the tree, which is of course the height of the tree h (or also could be h-1), because heap is a nearly complete binary tree.
+Since $h = \lfloor n \rfloor$ then the worst-case HEAPIFY has a running time $\Omega(log n)$.
+
+---------------------------------------------------
