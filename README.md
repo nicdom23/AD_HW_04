@@ -133,3 +133,26 @@ Heapify is then called a number of times equal to the number of nodes that conne
 Since $h = \lfloor n \rfloor$ then the worst-case HEAPIFY has a running time $\Omega(log n)$.
 
 ---------------------------------------------------
+
+For the last exercise of the first paper we can see that for a heap H of n elements:
+
+- $\lceil \frac{n}{2^{h+1}} \rceil = \lceil \frac{2^{log_2 (n)}}{2^{h+1}} \rceil \leq \lceil \frac{ 2^{\lceil log_2 (n)\rceil} }{2^{h+1}} \rceil  = \lceil  2^{\lceil log_2 (n)\rceil - h -1}  \rceil = \lceil  2^{\lfloor log_2 (n)\rfloor - h}  \rceil = 2^{\lfloor log_2 (n)\rfloor - h}=2^{height(H) - h}$ which is another, more direct and intuitive way of finding the maximum number of nodes at height h.
+
+But this is just an upper bound, and is not enough. I need to think of something else, but I cannot find an inductive or direct proof that is sufficient.
+
+-----------------------------------------------
+There goes the first exercise of the second paper.
+
+-----------------------------------------------------
+Now for the second exercise of the second paper. We see that it looks like a comparison between the sorting of an array by using SelectionSort and by using HeapSort. We consider that the array is full, so that $|A| = |D|$. The algorithm calls build once and then extract_min until D is empty.
+
+- If build,is_empty$\in \Theta(1)$, extract_min$\in \Theta(|D|)$ then it is like if we are using SelectionSort
+
+$T(|A|) = \Theta(1) + |D|\Theta(|D|) = \Theta(|A|^2)$
+
+- If build$\in \Theta(|A|)$,is_empty$\in \Theta(1)$, extract_min$\in \Theta(log|D|)$ then it is like if we are using HeapSort
+
+$T(|A|) = \Theta(|A|) + |D|\Theta(log|D|) = \Theta(|A|log|A|)$
+
+
+This shows how using heaps is a good way to sort an array. Heapsort then changes the array in place at the opposite of the 
