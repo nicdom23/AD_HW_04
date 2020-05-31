@@ -53,6 +53,7 @@ void swap_keys(binheap_type *H, unsigned int n_a, unsigned int n_b){
 
 void heapify(binheap_type *H, unsigned int node) //nodes are integers(fixes heap property on the current node,and its children)
 {
+	
 	unsigned int dst_node  = node, child; //dst node contains the minimum among node and its children
 				//dst_node is initialzed and defined here, child is just defined
 	do{
@@ -139,7 +140,8 @@ binheap_type *build_heap(void *A,
                          const unsigned int max_size,  
                          const size_t key_size, 
                          total_order_type leq)
-{
+{   
+	 
 	binheap_type *H = (binheap_type *) malloc(sizeof(binheap_type));//saves space for the variables
 	H->A =A;
 	H->num_of_elem = num_of_elem;
@@ -147,7 +149,7 @@ binheap_type *build_heap(void *A,
 	H->key_size = key_size;
 	H->leq = leq;
 	H->max_order_value = malloc(key_size);//no casting on pointer type because it's a pointer to void, i need to allocate new space for it because the array is not safe for them, because it can be cancelled
-
+    
 	if(num_of_elem==0){
 		return H; //everithing is done as it is
 	}
@@ -165,6 +167,7 @@ binheap_type *build_heap(void *A,
 	for(unsigned int i = num_of_elem/2; i>0; i--){//num_of_elem/2 identifies a good starting point, beacause it identifies the parent of the last leaf of the tree, which is of course always an internal node
 		heapify(H,i);
 	}
+	
 	heapify(H,0);
 	
 
