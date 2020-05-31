@@ -54,7 +54,6 @@ void swap_keys(binheap_type *H, unsigned int n_a, unsigned int n_b){
 void heapify(binheap_type *H, unsigned int node) //nodes are integers(fixes heap property on the current node,and its children)
 {   
 	
-	printf("HEApify");
 	unsigned int dst_node  = node, child; //dst node contains the minimum among node and its children
 				//dst_node is initialzed and defined here, child is just defined
 	do{
@@ -182,7 +181,7 @@ void delete_heap(binheap_type *H) //free the memory allocated by build_heap
 
 const void *decrease_key(binheap_type *H, void *node, const void *value)
 {    
-	printf("decrease key");
+	
     unsigned int node_idx = INDEX_OF(H,node);//we return the node index of the pointer
 
 	//if node does not belong to H or *value is > *node
