@@ -228,7 +228,7 @@ const void *insert_value(binheap_type *H, const void *value)
 		memcpy(H->max_order_value,value, H->key_size);
 	}
 
-	//we have the adress of a new node
+	//we have the address of a new node
 	void *new_node_addr = ADDR(H,H->num_of_elem);//this is the position defined  below
 	
 	//insert a new left-most node in the last level of the heap, so it is the last element of the array 
@@ -262,7 +262,4 @@ void print_heap(const binheap_type *H,
 	printf("\n");
 
 }
-		//parent_idx = PARENT(node_idx);??
-
-		//parent = ADDR(H, parent_idx);??
-
+		
