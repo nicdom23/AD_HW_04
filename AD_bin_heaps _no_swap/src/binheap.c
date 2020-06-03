@@ -16,7 +16,8 @@
 #define ADDR_key_pos(H,pos) ((H)->key_pos+(pos))
 #define ADDR_rev_pos(H,pos) ((H)->rev_pos+(pos))
 
-#define INDEX_OF(H,addr) (((addr)-((H)->key_pos))/sizeof(size_t))//index of node stored in that adress
+#define INDEX_OF(H,addr) (((addr)-((H)->key_pos)))///sizeof(size_t)index of node stored in that adress
+//#define INDEX_OF(H,addr) (((addr)-((H)->A))/(H)->key_size)//index of node stored in that adress
 
 
 int is_heap_empty(const binheap_type *H)
@@ -202,21 +203,21 @@ void delete_heap(binheap_type *H) //free the memory allocated by build_heap
 }
 
 
-const void *decrease_key(binheap_type *H, size_t *node, const void *value)
+const size_t *decrease_key(binheap_type *H, size_t *node, const void *value)
 {    
 	printf("\ndecrease invoked\n");
     unsigned int node_idx = INDEX_OF(H,node);//we return the node index of the pointer
-
+	printf("\n node_idx_in %d    ",node_idx);
 	//if node does not belong to H or *value is > *node
 	//the operation cannot be done(we cannot decrease node to value), return NULL
 	if(!VALID_NODE(H,node_idx) || !(H->leq(value, ADDR(H,*node)))){//again a comparison by address
-		
-		
-		printf("\nNULL  %d    %d  \n",!VALID_NODE(H,node_idx),!(H->leq(value, ADDR(H,*node))));
-		return NULL;
+			
+		printf("\nNULL  %d    %d  -> ",!VALID_NODE(H,node_idx),!(H->leq(value, ADDR(H,*node))));
+		printf("%d",node_idx);
+		return NULL; //ADDR(H,*node);
 	}
 	printf("\nvalue copy\n");
-	memcpy(ADDR(H,H->num_of_elem_A-1),value, H->key_size);//change the value of the node
+	memcpy(ADDR(H,*node),value, H->key_size);//change the value of the node
 	
 	printf("\nvalue copied\n");
 	//now we need to restore heap property
@@ -224,12 +225,13 @@ const void *decrease_key(binheap_type *H, size_t *node, const void *value)
 	unsigned int parent_idx = PARENT(node_idx);
 	size_t *parent = ADDR_key_pos(H, parent_idx);
 	
+	//printf("is to swap? %d \n",!H->leq(ADDR(H,*parent),ADDR(H,*node)));
 	//if not the root and  *parent greater than *node
 	while((node_idx != 0) && (!H->leq(ADDR(H,*parent),ADDR(H,*node)))){
 		
 		//swap parent and node keys		
 		swap_keys(H,parent_idx, node_idx);
-
+		printf("\nswapped\n");
 		
 		//focusing up on the node's parent
 		//moving up the check
@@ -240,14 +242,14 @@ const void *decrease_key(binheap_type *H, size_t *node, const void *value)
 		parent = ADDR_key_pos(H, parent_idx);
 	}
 	printf("\n end decrease invoked\n");
-    return node;
+    return node; //ADDR(H,*node);
 }
 
 
 
 
-
-const void *insert_value(binheap_type *H, const void *value)
+//now we return pointers to key_pos and not to A, if it is correct
+const size_t *insert_value(binheap_type *H, const void *value)
 {
     if(H->max_size == H ->num_of_elem_A){
 		return NULL;
@@ -265,14 +267,17 @@ const void *insert_value(binheap_type *H, const void *value)
 	memcpy(new_node_addr, H->max_order_value, H->key_size);
 
 	//newly added node is reported on key_pos
-	*ADDR_key_pos(H,H->num_of_elem) = H->num_of_elem_A;
+	size_t * new_node =ADDR_key_pos(H,H->num_of_elem);
+	*new_node = H->num_of_elem_A;
 	//increase the size of the heap
 	H->num_of_elem_A ++;
 	H->num_of_elem ++;
 
-	
+	printf("\ndecrease invoked\n");
+    unsigned int node_idx = INDEX_OF(H,new_node);//we return the node index of the pointer
+	printf("\n node_idx_out %d   ",node_idx);
 	//decrease the key of the new node(restores heap property
-	return decrease_key(H,ADDR_key_pos(H,H->num_of_elem), value);
+	return decrease_key(H,new_node, value);
 }
 
 void print_heap(const binheap_type *H, 

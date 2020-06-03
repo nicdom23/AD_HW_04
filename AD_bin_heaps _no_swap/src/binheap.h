@@ -118,7 +118,7 @@ void delete_heap(binheap_type *H);
  *         either the new value is greater than of equal to the old key
  *         value or the node does not belong to the H, NULL is returned.
  **********************************************************************/
-const void *decrease_key(binheap_type *H, size_t *node, const void *value);
+const size_t *decrease_key(binheap_type *H, size_t *node, const void *value);
 
 /**********************************************************************
  * Insert a value in the heap.
@@ -136,7 +136,7 @@ const void *decrease_key(binheap_type *H, size_t *node, const void *value);
  *         either the new value is greater than of equal to the old key
  *         value or the node does not belong to the H, NULL is returned.
  **********************************************************************/
-const void *insert_value(binheap_type *H, const void *value);
+const size_t *insert_value(binheap_type *H, const void *value);
 
 /**********************************************************************
  * Print a representation of the heap on the standard output.
