@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include <total_orders.h>
+#include "total_orders.h"
 
 /** @struct binheap_type
  *  @brief A class to represent binary heaps.
@@ -11,8 +11,11 @@
  *  This class is mean to represent binary heaps.
  */
 typedef struct {
-	void*A;// the array used to store heap nodes
+	void*A;// the array used to store heap nodes0000
+	size_t *key_pos;// the array used to store key position
+	size_t *rev_pos;// the array used to store the reverse key positions
 	unsigned int num_of_elem;//the number of nodes in the heap
+	unsigned int num_of_elem_A;//the number of nodes in the array
 	unsigned int max_size; //maximum number of nodes i.e. size of A
 	size_t key_size; //size of the key type
 	total_order_type leq;//the heap total order, it is memorized here
@@ -115,7 +118,7 @@ void delete_heap(binheap_type *H);
  *         either the new value is greater than of equal to the old key
  *         value or the node does not belong to the H, NULL is returned.
  **********************************************************************/
-const void *decrease_key(binheap_type *H, void *node, const void *value);
+const void *decrease_key(binheap_type *H, size_t *node, const void *value);
 
 /**********************************************************************
  * Insert a value in the heap.

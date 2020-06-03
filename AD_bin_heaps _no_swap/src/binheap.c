@@ -1,4 +1,4 @@
-#include <binheap.h>
+#include "binheap.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -13,7 +13,10 @@
 
 #define ADDR(H,node) ((H)->A+(node)*(H)->key_size) //adress to the value stored in the node node(pointer algebra)
 
-#define INDEX_OF(H,addr) (((addr)-((H)->A))/(H)->key_size)//index of node stored in that adress
+#define ADDR_key_pos(H,pos) ((H)->key_pos+(pos))
+#define ADDR_rev_pos(H,pos) ((H)->rev_pos+(pos))
+
+#define INDEX_OF(H,addr) (((addr)-((H)->key_pos))/sizeof(size_t))//index of node stored in that adress
 
 
 int is_heap_empty(const binheap_type *H)
@@ -29,21 +32,33 @@ const void *min_value(const binheap_type *H)//we want to return a pointer to a v
 	return NULL;
     }
 	//minimum is stored in the root that is A[0]
-    return ADDR(H,0);//returns a pointer to an element inside a node of our array
+	return ADDR(H,*ADDR_key_pos(H,0));//returns a pointer to an element inside a node of our array
 		//here we return an adress to the root(we do nothing to the min!)
 }
 
 void swap_keys(binheap_type *H, unsigned int n_a, unsigned int n_b){
 //two possible ways, the simplest is to swap element in the array, but we need to copy a number of elemenets which depend on key size
 //otherwise we could store an array of integers which store a pointer to the real key, this array will deal with all the swapping, A remains the same
-//we go on the first case here(you need to handle an unknown number of bytes, while you write the library, but you save pointers)
-	void *p_a = ADDR(H, n_a);
-	void *p_b = ADDR(H, n_b);
-	void *tmp = malloc(H->key_size); //create temporary space in heap of the wanted size of key
 
-	memcpy(tmp, p_a, H->key_size);//copies memory of the given bit size
-	memcpy(p_a, p_b, H->key_size);
-	memcpy(p_b, tmp, H->key_size);
+//Now we implement the second case	
+	//swaps indexes in key_pos
+	size_t *p_a = ADDR_key_pos(H, n_a);
+	size_t *p_b = ADDR_key_pos(H, n_b);
+	size_t *tmp = malloc(sizeof(size_t)); //create temporary space in heap of the wanted size of key
+
+	memcpy(tmp, p_a, sizeof(size_t));//copies memory of the given bit size
+	memcpy(p_a, p_b, sizeof(size_t));
+	memcpy(p_b, tmp, sizeof(size_t));
+    
+	//swaps positions in rev_pos according to the swapped positions in key_pos
+    size_t *r_a = ADDR_rev_pos(H,*p_a);
+	size_t *r_b = ADDR_rev_pos(H,*p_b);
+	
+	memcpy(tmp, r_a, sizeof(size_t));//copies memory of the given bit size
+	memcpy(r_a, r_b, sizeof(size_t));
+	memcpy(r_b, tmp, sizeof(size_t));
+
+
 
 	free(tmp);
 	//a simple swapping function
@@ -67,14 +82,14 @@ void heapify(binheap_type *H, unsigned int node) //nodes are integers(fixes heap
 		child= RIGHT_CHILD(node);
 		
 		if(VALID_NODE(H,child) && //doesn't hold if child is a leaf
-			H->leq(ADDR(H,child),ADDR(H, dst_node))){//comparison by adresses
+			H->leq(ADDR(H,*ADDR_key_pos(H,child)),ADDR(H, *ADDR_key_pos(H,dst_node)))){//comparison by adresses
 			dst_node = child; //a children of the node I am dealing with satisfied to be the candidate to be swapped??		
 		}
 
 		child= LEFT_CHILD(node);
 		
 		if(VALID_NODE(H,child) && 
-			H->leq(ADDR(H,child),ADDR(H, dst_node))){
+			H->leq(ADDR(H,*ADDR_key_pos(H,child)),ADDR(H, *ADDR_key_pos(H,dst_node)))){
 			dst_node = child; 		
 		}
 		
@@ -106,7 +121,7 @@ const void *extract_min(binheap_type *H)//we do not save a space in memory for t
     //now I need to restore heap property
     heapify(H,0);//call heapify on root(it fixes the heap property thst pushes down the problem)
 
-    return ADDR(H,H->num_of_elem);//return the address of the last element, which is the minimum now
+    return ADDR(H,*ADDR_key_pos(H,H->num_of_elem));//return the address of the last element, which is the minimum now
 							//I do not get this +1, try and test it later
 }
 
@@ -143,12 +158,19 @@ binheap_type *build_heap(void *A,
 {
 	binheap_type *H = (binheap_type *) malloc(sizeof(binheap_type));//saves space for the variables
 	H->A =A;
+	H -> key_pos = (size_t*)malloc(max_size*sizeof(size_t));
+	 for (size_t i = 0; i<max_size;i++)
+	 		H -> key_pos[i] = i;
+	H -> rev_pos = (size_t*)malloc(max_size*sizeof(size_t));
+		for (size_t i = 0; i<max_size;i++)
+	 		H -> rev_pos[i] = i;
 	H->num_of_elem = num_of_elem;
+	H->num_of_elem_A = num_of_elem;
 	H->max_size = max_size;
 	H->key_size = key_size;
 	H->leq = leq;
 	H->max_order_value = malloc(key_size);//no casting on pointer type because it's a pointer to void, i need to allocate new space for it because the array is not safe for them, because it can be cancelled
-
+        
 	if(num_of_elem==0){
 		return H; //everithing is done as it is
 	}
@@ -179,26 +201,31 @@ void delete_heap(binheap_type *H) //free the memory allocated by build_heap
     free(H);
 }
 
-const void *decrease_key(binheap_type *H, void *node, const void *value)
+
+const void *decrease_key(binheap_type *H, size_t *node, const void *value)
 {    
-	
+	printf("\ndecrease invoked\n");
     unsigned int node_idx = INDEX_OF(H,node);//we return the node index of the pointer
 
 	//if node does not belong to H or *value is > *node
 	//the operation cannot be done(we cannot decrease node to value), return NULL
-	if(!VALID_NODE(H,node_idx) || !(H->leq(value, node))){//again a comparison by address
+	if(!VALID_NODE(H,node_idx) || !(H->leq(value, ADDR(H,*node)))){//again a comparison by address
+		
+		
+		printf("\nNULL  %d    %d  \n",!VALID_NODE(H,node_idx),!(H->leq(value, ADDR(H,*node))));
 		return NULL;
 	}
-
-	memcpy(node,value, H->key_size);//change the value of the node
-
+	printf("\nvalue copy\n");
+	memcpy(ADDR(H,H->num_of_elem_A-1),value, H->key_size);//change the value of the node
+	
+	printf("\nvalue copied\n");
 	//now we need to restore heap property
 
 	unsigned int parent_idx = PARENT(node_idx);
-	void *parent = ADDR(H, parent_idx);
+	size_t *parent = ADDR_key_pos(H, parent_idx);
 	
 	//if not the root and  *parent greater than *node
-	while((node_idx != 0) && (!H->leq(parent,node))){
+	while((node_idx != 0) && (!H->leq(ADDR(H,*parent),ADDR(H,*node)))){
 		
 		//swap parent and node keys		
 		swap_keys(H,parent_idx, node_idx);
@@ -210,9 +237,9 @@ const void *decrease_key(binheap_type *H, void *node, const void *value)
 		node =parent;//we need the adress in order to compare under leq
 		
 		parent_idx = PARENT(node_idx);
-		parent = ADDR(H,parent_idx);
+		parent = ADDR_key_pos(H, parent_idx);
 	}
-
+	printf("\n end decrease invoked\n");
     return node;
 }
 
@@ -222,26 +249,30 @@ const void *decrease_key(binheap_type *H, void *node, const void *value)
 
 const void *insert_value(binheap_type *H, const void *value)
 {
-    if(H->max_size == H ->num_of_elem){
+    if(H->max_size == H ->num_of_elem_A){
 		return NULL;
 	}//we do not want to allocate new memory, so this is the only possible behaviour of the code(maximum number of elements contained? we do nothing)
 		//case of empty array, vs case of new maximum value to insert	
-	if(H->num_of_elem == 0 || !H->leq(value, H->max_order_value)) {
+	if(H->num_of_elem_A == 0 || !H->leq(value, H->max_order_value)) {
 		memcpy(H->max_order_value,value, H->key_size);
 	}
 
 	//we have the address of a new node
-	void *new_node_addr = ADDR(H,H->num_of_elem);//this is the position defined  below
+	void *new_node_addr = ADDR(H,H->num_of_elem_A);//this is the position defined  below
 	
 	//insert a new left-most node in the last level of the heap, so it is the last element of the array 
 				//copy the max value of the array
 	memcpy(new_node_addr, H->max_order_value, H->key_size);
 
+	//newly added node is reported on key_pos
+	*ADDR_key_pos(H,H->num_of_elem) = H->num_of_elem_A;
 	//increase the size of the heap
+	H->num_of_elem_A ++;
 	H->num_of_elem ++;
 
+	
 	//decrease the key of the new node(restores heap property
-	return decrease_key(H,new_node_addr, value);
+	return decrease_key(H,ADDR_key_pos(H,H->num_of_elem), value);
 }
 
 void print_heap(const binheap_type *H, 
@@ -257,7 +288,7 @@ void print_heap(const binheap_type *H,
 
 		}
 
-	key_printer(ADDR(H,node));//printss the key using the custom printing function
+	key_printer(ADDR(H,*ADDR_key_pos(H,node)));//printss the key using the custom printing function
 
 	}
 
