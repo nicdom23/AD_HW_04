@@ -1,0 +1,10 @@
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/rebuild_cache.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/common.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/binheap.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/install/strip.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/install/local.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/test_delete_min.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/install.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/list_install_components.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/test_insert.dir
+/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library/CMakeFiles/edit_cache.dir

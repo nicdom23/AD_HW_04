@@ -200,7 +200,7 @@ void delete_heap(binheap_type *H) //free the memory allocated by build_heap
 {
     free(H->max_order_value);
     free(H->key_pos);
-    free(h->rev_pos);
+    free(H->rev_pos);
     free(H);
 }
 

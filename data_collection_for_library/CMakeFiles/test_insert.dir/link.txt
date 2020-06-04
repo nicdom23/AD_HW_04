@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG  -rdynamic CMakeFiles/test_insert.dir/tests/test_insert.c.o  -o test_insert -Wl,-rpath,/home/nd23/Adv_algorithms/AD_HW_04/data_collection_for_library libcommon.a libbinheap.so 

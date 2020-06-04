@@ -147,10 +147,12 @@ There goes the first exercise of the second paper.
 After a lot of debugging I implemented the no-swap in A code. The functions insert_value and decrease_key work with pointers to key_pos. I know I need to fix them to work with pointers to A.
 
 As for array handling I have choosen that insert_value adds the key to A, while extract_min does not remove the key from the array. So the array keeps growing as new keys are inserted and doesn't empty. Once num_of_elem_A == max_size a new insertion would make the code stop (as the program goes segfault because it tries to handle a NULL value). This is how I have choosen to handle the array.
+---------------------------------------------------------------------------------------------------------
+Now the code works with using pointers to the values of A, remember that once A is full then the program goes to segfault because insert_values returns a NULL. To clairfy I used two pointers, num_of_elem, wich tracks the number of elements on the heap, and num_of_elem_A wich tracks the number of elements on the array. Insert_value increases both of them, while extract_min only decreases num_of_elem, that's why they are separated. So always num_of_elem <= num_of_elem_A.
 
-
-
------------------------------------------------------
+Now I found other bugs that I will need to fix
+----------------------------------------------------
+31/05/2020
 Now for the second exercise of the second paper. We see that it looks like a comparison between the sorting of an array by using SelectionSort and by using HeapSort. We consider that the array is full, so that $|A| = |D|$. The algorithm calls build once and then extract_min until D is empty.
 
 - If build,is_empty$\in \Theta(1)$, extract_min$\in \Theta(|D|)$ then it is like if we are using SelectionSort
