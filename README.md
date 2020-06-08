@@ -5,9 +5,10 @@ Homework exercises for the Algorithm design course at the University of Trieste(
 
 I looked at the Heap slides, it seems simple. The operations you can do are building the heap($\Theta(n)$), looking at the minimum ($\Theta(1)$), extracting the minimum ($\Theta(log(n))$),decreasing a key in the heap ($\Theta(log(n))$), and then inserting a key in the heap ($\Theta(log(n))$). The heap property is mantained thanks to the Heapify algorithm. It doesn't look so difficult to understand.
 
-
+## Paper 1
  ----------------------------------------
  31/05/2020
+###Exercise 1 & Exercise 2
 
 So I report here in this homework the array implementation of the binary heap that we implemented in class. It already has all the wanted functions. 
 
@@ -50,6 +51,8 @@ For the third point of the exercise I could use c++'s timing function and create
 I understood that decrease_key does not invoke heapify.
 ------------------------------------------------------
 So after formatting and correcting the code I used three different type of arrays:
+
+### Exercise 3
 
 - Array $A = {0,1,2,3,4,...,n-1}$ which is a best possible array, because the heap propery is already satisfied.
 - Array $A$ of size $n-1$ of random integers from 0 to 20 wich creates an average array.
@@ -107,6 +110,7 @@ So all the execution times grows with the dimension. The ordered array has the b
 This is all correct with the theory. Notice how as n doubles then the time to build the matrix doubles. Of course ext_min has a time $\Theta(1)$ so it is so small that it is not measured by the program. ext_min's performance does not depend on n.
 
 ----------------------------------------------------------------------
+###Exercise 4
 
 Now I want to prove that with the array representation, then the leaves of a binary heap that contains $n>0$ nodes are indexed by $\lfloor n/2 \rfloor+1,\lfloor n/2 \rfloor+2,\cdots,n$
 
@@ -118,7 +122,7 @@ We count the indexes starting from 1;
 - Since the heap is a nearly complete binary tree, by its topology then all the consecutive indexes from $\lfloor n/2 \rfloor +1$ to $n$ must be leaves and so we have our proof.
 
 ----------------------------------------------------------
-
+### Exercise 5
 Now I want to see that HEAPIFY applied on a binary heap H of size n has a worst case running time $\Omega(log n)$.
 
 We just need to think about this case:
@@ -133,14 +137,26 @@ Heapify is then called a number of times equal to the number of nodes that conne
 Since $h = \lfloor n \rfloor$ then the worst-case HEAPIFY has a running time $\Omega(log n)$.
 
 ---------------------------------------------------
-
+### Excercise 6 (to finish)
 For the last exercise of the first paper we can see that for a heap H of n elements:
 
 - $\lceil \frac{n}{2^{h+1}} \rceil = \lceil \frac{2^{log_2 (n)}}{2^{h+1}} \rceil \leq \lceil \frac{ 2^{\lceil log_2 (n)\rceil} }{2^{h+1}} \rceil  = \lceil  2^{\lceil log_2 (n)\rceil - h -1}  \rceil = \lceil  2^{\lfloor log_2 (n)\rfloor - h}  \rceil = 2^{\lfloor log_2 (n)\rfloor - h}=2^{height(H) - h}$ which is another, more direct and intuitive way of finding the maximum number of nodes at height h.
 
 But this is just an upper bound, and is not enough. I need to think of something else, but I cannot find an inductive or direct proof that is sufficient.
 
+08/06/2020
+
+So from exercise 4 we can say that a nearly complete tree of n element has $n - \lfloor n/2 \rfloor = \lceil n/2 \rceil$ leaves.
+So $\lceil \frac{n}{2^{h+1}} \rceil$ is true for $h=0$. This is the base case of an induction proof.
+
+- Once we set the size n of the heap H, at height h we have $N_h$ nodes.Let's assume that, for h>0, $N_{h-1}\leq \lceil \frac{n}{2^{h}} \rceil$ is true for a heap of size n. In fact, when we have an height h>0 then the equality holds, because heaps are nearly complete trees, so we must have the maximum number of internal nodes for each level. 
+- If we remove all the leaves from one heap H we would then have H' where $n'= n-\lceil n/2 \rceil=\lfloor n/2 \rfloor$ . Now $N'_{0}=N_{1}=\lceil n'/2 \rceil=\lceil \lfloor n/2 \rfloor/2 \rceil\leq \lceil  (n/2) /2 \rceil=\lceil  n/2^2 \rceil$
+- So it is true that if we remove all the leaves from an heap H and get an heap H', then $N_{h} = N'_{h-1}$ 
+-  So $N_{h} = N'_{h-1} = \lceil n'/2^{h} \rceil=\lceil \lfloor n/2 \rfloor/2^{h} \rceil\leq \lceil  (n/2) /2^{h} \rceil=\lceil  n/2^{h+1} \rceil$
+
 -----------------------------------------------
+## Paper 2
+### Exercise 1
 There goes the first exercise of the second paper.
 03/06/2020
 
@@ -164,4 +180,4 @@ $T(|A|) = \Theta(1) + |D|\Theta(|D|) = \Theta(|A|^2)$
 $T(|A|) = \Theta(|A|) + |D|\Theta(log|D|) = \Theta(|A|log|A|)$
 
 
-This shows how using heaps is a good way to sort an array. Heapsort then changes the array in place at the opposite of the 
+This shows how using heaps is a good way to sort an array. Heapsort then changes the array in place at the opposite of the total order we use(the minimum is swapped with the last active element of the heap, so all the minimums are placed in reverse order in the array).
