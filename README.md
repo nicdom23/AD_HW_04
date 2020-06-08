@@ -169,6 +169,7 @@ Now the code works with using pointers to the values of A, remember that once A 
 Now I found other bugs that I will need to fix
 ----------------------------------------------------
 31/05/2020
+### Exercise 2
 Now for the second exercise of the second paper. We see that it looks like a comparison between the sorting of an array by using SelectionSort and by using HeapSort. We consider that the array is full, so that $|A| = |D|$. The algorithm calls build once and then extract_min until D is empty.
 
 - If build,is_empty$\in \Theta(1)$, extract_min$\in \Theta(|D|)$ then it is like if we are using SelectionSort
